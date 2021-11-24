@@ -13,13 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@CrossOrigin(origins ="http://localhost:4200", allowedHeaders ="*") //per lavorare in locale 
-@RequestMapping(path="/persona") //path iniziale 
+@CrossOrigin(origins ="http://localhost:4200", allowedHeaders ="*")
+@RequestMapping(path="/persona")
 public class PersonaController {
 @Autowired
 private PersonaRepository personaRepository;
- 
-@PostMapping(path="/aggiungi") //aggiunge una persona
+
+@CrossOrigin(origins ="http://localhost:4200", allowedHeaders ="*")
+@PostMapping(path="/aggiungi")
 public @ResponseBody String addNewPersona (@RequestParam String name, @RequestParam String lastname, 
 											@RequestParam String email, @RequestParam int eta){ 
     // @ResponseBody means the returned String is the response, not a view name
@@ -32,62 +33,49 @@ public @ResponseBody String addNewPersona (@RequestParam String name, @RequestPa
     personaRepository.save(n);
     return "Saved";
   }
-
-
-@GetMapping(path="/visualizza") //visualizza tutto
+@CrossOrigin(origins ="http://localhost:4200", allowedHeaders ="*")
+@GetMapping(path="/visualizza")
 public @ResponseBody Iterable<Persona> getAllPersone() { //ritorna nel corpo della pagina un iterable di utenti
   // This returns a JSON or XML with the users
   return personaRepository.findAll(); //find all corrisponde a select * from tabella
 }
 
-
-@GetMapping(path = "/pernome/{name}") //ricerca per nome
+@CrossOrigin(origins ="http://localhost:4200", allowedHeaders ="*")
+@GetMapping(path = "/pernome/{name}")
 public @ResponseBody Iterable<Persona> getPersonaName(@PathVariable("name") String name) {
+	System.out.println(name);
     return personaRepository.findByname(name);
 }
-
-@GetMapping(path = "/percognome/{lastname}") //ricerca per cognome
+@CrossOrigin(origins ="http://localhost:4200", allowedHeaders ="*")
+@GetMapping(path = "/percognome/{lastname}")
 public @ResponseBody Iterable<Persona> getPersonaLastName(@PathVariable("lastname") String lastname) {
     return personaRepository.findBylastname(lastname);
 }
 
-@GetMapping(path = "/perid/{id}") //ricerca per id
+@CrossOrigin(origins ="http://localhost:4200", allowedHeaders ="*")
+@DeleteMapping(path = "/delete/{id}")
+public @ResponseBody void deletePersona(@PathVariable("id") Integer id) {
+    personaRepository.deleteById(id);
+}
+@CrossOrigin(origins ="http://localhost:4200", allowedHeaders ="*")
+@PostMapping(path="/modifica") //simile all'aggiungi, gli cambio i parametri se esiste quell'id
+public @ResponseBody String AlterPersona(@RequestParam Persona p) {
+if (personaRepository.existsById(p.getId())) {
+personaRepository.save(p);
+return "Success";
+}
+else
+{
+return "Impossibile modifica, id inesistente";
+}
+}
+@CrossOrigin(origins ="http://localhost:4200", allowedHeaders ="*")
+@GetMapping(path = "/perid/{id}")
 public @ResponseBody Persona getPersonaId(@PathVariable Integer id) {
+	System.out.println(id);
     return personaRepository.findByid(id);
 }
 
-@DeleteMapping(path="/rimuovi/{id}") //rimuovi per id 
-public @ResponseBody String DeletePersonaId (@PathVariable(required = true) Integer id){ 
-	if (personaRepository.existsById(id)) { //se esiste l'id
-    personaRepository.deleteById(id);
-    return "Removed";
-	}
-	else
-	{
-		return "Impossibile rimuovere, id inesistente";
-	}
-}
 
-@PutMapping(path="/modifica") //simile all'aggiungi, gli cambio i parametri se esiste quell'id
-public @ResponseBody String AlterPersona(@RequestParam Integer id, @RequestParam String name, @RequestParam String lastname, 
-											@RequestParam String email, @RequestParam int eta) {
-	if (personaRepository.existsById(id)) {
-		Persona n = new Persona();
-		n.setId(id);
-	    n.setName(name);
-	    n.setLastname(lastname);
-	    n.setEmail(email);
-	    n.setEta(eta);
-	    personaRepository.save(n);
-		return "Success";
-		
-	}
-	else
-	{
-		return "Impossibile modifica, id inesistente";
-	}
-	
-}
-    
 
 }
