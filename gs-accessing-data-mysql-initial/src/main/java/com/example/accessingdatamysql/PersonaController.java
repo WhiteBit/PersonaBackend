@@ -22,7 +22,7 @@ public class PersonaController {
 	private PersonaRepository personaRepository;
 
 	@PostMapping(path = "/aggiungi", produces = MediaType.APPLICATION_JSON_VALUE) // aggiunge una persona
-	public @ResponseBody String addNewPersona(@RequestBody Persona p) {
+	public @ResponseBody Persona addNewPersona(@RequestBody Persona p) {
 		// @ResponseBody means the returned String is the response, not a view name
 		// @RequestParam means it is a parameter from the GET or POST request
 		
@@ -32,7 +32,7 @@ public class PersonaController {
 		n.setEmail(p.getEmail());
 		n.setEta(p.getEta());
 		personaRepository.save(n);
-		return "Saved";
+		return n;
 	}
 
 	@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
@@ -61,14 +61,12 @@ public class PersonaController {
 	}
 
 	@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
-	@DeleteMapping(path = "/rimuovi/{id}") // rimuovi per id
-	public @ResponseBody String DeletePersonaId(@PathVariable(required = true) Integer id) {
+	@DeleteMapping(path = "/rimuovi/{id}", produces = MediaType.APPLICATION_JSON_VALUE) // rimuovi per id
+	public @ResponseBody Persona DeletePersonaId(@PathVariable(required = true) Integer id) {
 		if (personaRepository.existsById(id)) { // se esiste l'id
 			personaRepository.deleteById(id);
-			return "Removed";
-		} else {
-			return "Impossibile rimuovere, id inesistente";
-		}
+		} 
+		return personaRepository.findByid(id);
 	}
 
 	@CrossOrigin(origins = "http://localhost:4200")
