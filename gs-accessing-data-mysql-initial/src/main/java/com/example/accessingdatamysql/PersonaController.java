@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,15 +42,45 @@ public class PersonaController {
 	}
 
 	@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
-	@GetMapping(path = "/pernome/{name}") // ricerca per nome
-	public @ResponseBody Iterable<Persona> getPersonaName(@PathVariable("name") String name) {
+	@GetMapping(path = "/ricerca/nome") // ricerca per nome
+	public @ResponseBody Iterable<Persona> getPersonaName(@RequestParam(value = "name") String name) {
 		return personaRepository.findByname(name);
 	}
 
 	@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
-	@GetMapping(path = "/percognome/{lastname}") // ricerca per cognome
-	public @ResponseBody Iterable<Persona> getPersonaLastName(@PathVariable("lastname") String lastname) {
+	@GetMapping(path = "/ricerca/cognome{cognome}") // ricerca per cognome
+	public @ResponseBody Iterable<Persona> getPersonaLastname(@PathVariable("cognome") String lastname) {
 		return personaRepository.findBylastname(lastname);
+	}
+	
+	@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
+	@GetMapping(path = "/ricerca/eta") // ricerca per età
+	public @ResponseBody Iterable<Persona> getPersonaEta(@RequestBody int eta) {
+		return personaRepository.findByeta(eta);
+	}
+	
+	@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
+	@GetMapping(path = "/ricerca/{nome}-{cognome}") // ricerca per nome e cognome
+	public @ResponseBody Iterable<Persona> getPersonaNameLastname(@PathVariable("nome") String name, @PathVariable("cognome")String lastname) {
+		return personaRepository.findByNameAndLastname(name, lastname);
+	}
+	
+	@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
+	@GetMapping(path = "/ricerca/nomeeta") // ricerca per nome ed età
+	public @ResponseBody Iterable<Persona> getPersonaNameEta(@RequestBody String name, @RequestBody int eta) {
+		return personaRepository.findByNameAndEta(name, eta);
+	}
+	
+	@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
+	@GetMapping(path = "/ricerca/cognomeeta") // ricerca per cognome ed età
+	public @ResponseBody Iterable<Persona> getPersonaLastnameEta(@RequestBody String lastname, @RequestBody int eta) {
+		return personaRepository.findByLastnameAndEta(lastname, eta);
+	}
+	
+	@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
+	@GetMapping(path = "/ricerca/all") // ricerca per all
+	public @ResponseBody Iterable<Persona> getPersonaNameLastnameEta(@RequestBody String name, @RequestBody String lastname, @RequestBody int eta) {
+		return personaRepository.findByNameAndLastnameAndEta(name, lastname, eta);
 	}
 
 	@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
